@@ -1,0 +1,53 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!define DEVICONS https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/devicons
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+' uncomment the following line and comment the first to use locally
+' !include C4_Container.puml
+!include DEVICONS/angular.puml
+!include DEVICONS/dotnet.puml
+!include DEVICONS/java.puml
+!include DEVICONS/msql_server.puml
+!include FONTAWESOME/server.puml
+!include FONTAWESOME/envelope.puml
+
+' LAYOUT_TOP_DOWN()
+' LAYOUT_AS_SKETCH()
+LAYOUT_WITH_LEGEND()
+
+title Container Diagram for Vestas Wind Farm Monitoring and Management
+
+Person(engineer, Engineer, "Vestas Wind Farm On-Site Engineers - Solution Reporting")
+Person(client_analysis, Client Analysis, "Client Analysis of Wind Farm Efficiency, Incidents, Power Output, and Revenue")
+
+
+System_Boundary(c1, "New Enterprise Solution - Azure Cloud") {
+    Container(web_front_end, "Web Front-End", "Web Portal for the Vestas Wind Farm Engineers", "Delivers Dynamic and Static Content, Handles A & A, Incidents, Ordering and Reporting")
+    Container(application, "Application", "Power Application", "Application Logic for the Vestas Wind Farm Solution")
+    Container(database_backend, "Database", "Backend Database", "MS SQL Database")
+}
+
+System_Boundary(c2, "Existing Solutions and Integrations") {
+    Container(SAP, "SAP Enterprise Asset Management", "SAP Enterprise Asset Management for Vestas Wind Farms", "Ordering New Materials")
+    Container(servicedesk_cmdb, "ServiceDesk and CMDB", "Power Application", "Application Logic for the Vestas Wind Farm Solution")
+    Container(active_directory, "Active Directory", "Authentication and Authorisation", "MS Active Directory")
+}
+
+System_Ext(email_system, "E-Mail System", "The internal Microsoft Exchange system", "envelope")
+
+Rel_Back(engineer, email_system, "Sends e-mails to")
+
+Rel(engineer, web_front_end, "Uses", "HTTPS")
+Rel(client_analysis, web_front_end, "Uses", "HTTPS")
+
+Rel_Neighbor(database_backend, application, "CRUD", "SQL")
+Rel_Neighbor(application, web_front_end, "Requests", "HTTPS")
+Rel_Neighbor(application, database_backend, "CRUD", "SQL")
+Rel_Neighbor(web_front_end, application, "Requests", "HTTPS")
+
+Rel_Back_Neighbor(application, active_directory, "Authentication and Authorisation", "sync")
+
+Rel_Neighbor(c1, SAP, "Solution Assets")
+Rel_Neighbor(c1, servicedesk_cmdb, "Incident and Change", "HTTPS")
+Rel_Neighbor(c1, active_directory, "Authentication and Authorisation", "sync")
+@enduml
